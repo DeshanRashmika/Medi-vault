@@ -11,8 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/Upload")
+
 public class FileUploadController {
+
     private final FileStorageService fileStorageService;
+
     @PostMapping("/upload-secure")
     public ResponseEntity<?> uploadMedicalFile(
             @RequestParam("file") MultipartFile file,

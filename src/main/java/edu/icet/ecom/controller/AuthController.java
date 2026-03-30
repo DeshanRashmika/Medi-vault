@@ -32,7 +32,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        user.setId(null);
+
+          if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
 
