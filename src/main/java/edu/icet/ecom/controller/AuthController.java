@@ -1,4 +1,5 @@
 package edu.icet.ecom.controller;
+
 import edu.icet.ecom.dto.AuthResponse;
 import edu.icet.ecom.dto.LoginRequest;
 import edu.icet.ecom.models.User;
@@ -34,8 +35,12 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         user.setId(null);
 
-          if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
+        }
+
+        if (user.getRole() == null) {
+            user.setRole(User.Role.PATIENT);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -53,7 +58,8 @@ public class AuthController {
 
         String jwt = jwtUtils.generateToken(loginRequest.getEmail());
 
-        User user = userRepository.findByEmail(loginRequest.getEmail()).get();
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
 
         return ResponseEntity.ok(new AuthResponse(jwt, user.getEmail(), user.getRole().name()));
     }
