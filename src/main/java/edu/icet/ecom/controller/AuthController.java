@@ -44,9 +44,14 @@ public class AuthController {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        return ResponseEntity.ok("User registered successfully!");
+         Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(savedUser.getEmail(), user.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = jwtUtils.generateToken(savedUser.getEmail());
+        return ResponseEntity.ok(new AuthResponse(jwt, savedUser.getEmail(), savedUser.getRole().name()));
     }
 
     @PostMapping("/login")
