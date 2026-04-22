@@ -43,11 +43,12 @@ public class AuthController {
             user.setRole(User.Role.PATIENT);
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String rawPassword = user.getPassword();
+        user.setPassword(passwordEncoder.encode(rawPassword));
         User savedUser = userRepository.save(user);
 
          Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(savedUser.getEmail(), user.getPassword()));
+                new UsernamePasswordAuthenticationToken(savedUser.getEmail(), rawPassword));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtUtils.generateToken(savedUser.getEmail());
