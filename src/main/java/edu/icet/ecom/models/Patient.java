@@ -1,6 +1,9 @@
 package edu.icet.ecom.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,6 +11,7 @@ import java.util.List;
 @Entity
 @Table(name = "patients")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "records", "user", "profilePicture"})
 public class Patient {
 
     @Id

@@ -1,6 +1,9 @@
 package edu.icet.ecom.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,6 +21,7 @@ public class MedicalRecord {
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "records", "user", "profilePicture"})
     private Patient patient;
 
     private LocalDateTime uploadedAt;
