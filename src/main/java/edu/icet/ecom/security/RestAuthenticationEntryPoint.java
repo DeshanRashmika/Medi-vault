@@ -15,11 +15,7 @@ import java.io.IOException;
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final ObjectMapper objectMapper;
-
-    public RestAuthenticationEntryPoint(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public void commence(HttpServletRequest request,
@@ -27,7 +23,6 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(), ApiResponse.error("Unauthorized"));
+        OBJECT_MAPPER.writeValue(response.getOutputStream(), ApiResponse.error("Unauthorized"));
     }
 }
-

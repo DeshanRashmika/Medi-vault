@@ -15,11 +15,7 @@ import java.io.IOException;
 @Component
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final ObjectMapper objectMapper;
-
-    public RestAccessDeniedHandler(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public void handle(HttpServletRequest request,
@@ -27,7 +23,6 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(), ApiResponse.error("Forbidden"));
+        OBJECT_MAPPER.writeValue(response.getOutputStream(), ApiResponse.error("Forbidden"));
     }
 }
-

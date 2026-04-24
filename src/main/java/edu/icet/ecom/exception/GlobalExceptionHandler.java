@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import java.util.stream.Collectors;
 
@@ -31,7 +32,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ConstraintViolationException.class, ValidationException.class, IllegalArgumentException.class,
-            HttpMessageNotReadableException.class, MaxUploadSizeExceededException.class})
+            HttpMessageNotReadableException.class, MaxUploadSizeExceededException.class,
+            MissingServletRequestParameterException.class})
+
     public ResponseEntity<ApiResponse<Void>> handleBadRequest(Exception ex) {
         String message = ex.getMessage() == null ? "Invalid request" : ex.getMessage();
         return ResponseEntity.badRequest().body(ApiResponse.error(message));
@@ -65,4 +68,3 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("Unexpected server error"));
     }
 }
-
