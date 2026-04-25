@@ -1,5 +1,6 @@
 package edu.icet.ecom.service;
 
+import edu.icet.ecom.dto.PatientProfileRequestDTO;
 import edu.icet.ecom.dto.PatientProfileResponse;
 import edu.icet.ecom.dto.UpdatePatientProfileRequest;
 import edu.icet.ecom.exception.ForbiddenOperationException;
@@ -32,13 +33,16 @@ public class PatientProfileService {
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
     private final PatientProfileMapper patientProfileMapper;
+    private final FileStorageService fileStorageService;
 
     public PatientProfileService(PatientRepository patientRepository,
                                  UserRepository userRepository,
-                                 PatientProfileMapper patientProfileMapper) {
+                                 PatientProfileMapper patientProfileMapper,
+                                 FileStorageService fileStorageService) {
         this.patientRepository = patientRepository;
         this.userRepository = userRepository;
         this.patientProfileMapper = patientProfileMapper;
+        this.fileStorageService = fileStorageService;
     }
 
     @Transactional
@@ -52,6 +56,26 @@ public class PatientProfileService {
         Patient patient = findOrCreatePatientByEmail(email);
         patientProfileMapper.applyUpdate(request, patient.getUser());
         userRepository.save(patient.getUser());
+        return patientProfileMapper.toResponse(patient);
+    }
+
+    @Transactional
+    public PatientProfileResponse updateHealthSummary(String email, PatientProfileRequestDTO request) {
+        Patient patient = findOrCreatePatientByEmail(email);
+        patientProfileMapper.applyHealthSummary(request, patient);
+        patientRepository.save(patient);
+        return patientProfileMapper.toResponse(patient);
+    }
+
+    @Transactional
+    public PatientProfileResponse uploadProfileImage(String email, MultipartFile file) {
+        validateProfileImage(file);
+        Patient patient = findOrCreatePatientByEmail(email);
+
+        String fileName = fileStorageService.storeFile(file);
+        patient.setProfileImageUrl("/uploads/" + fileName);
+        patientRepository.save(patient);
+
         return patientProfileMapper.toResponse(patient);
     }
 

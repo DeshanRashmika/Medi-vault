@@ -22,6 +22,18 @@ public class Patient {
     private String phoneNumber;
     private LocalDate dateOfBirth;
 
+    @Column(name = "blood_group", length = 10)
+    private String bloodGroup;
+
+    @Column(name = "height")
+    private Double height;
+
+    @Column(name = "weight")
+    private Double weight;
+
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "profile_picture")
