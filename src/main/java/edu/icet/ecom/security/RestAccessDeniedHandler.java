@@ -2,7 +2,6 @@ package edu.icet.ecom.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.icet.ecom.dto.ApiResponse;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -11,18 +10,29 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public RestAccessDeniedHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
-                       AccessDeniedException accessDeniedException) throws IOException, ServletException {
+                       AccessDeniedException accessDeniedException) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
+
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        OBJECT_MAPPER.writeValue(response.getOutputStream(), ApiResponse.error("Forbidden"));
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        objectMapper.writeValue(response.getOutputStream(), ApiResponse.error("Forbidden"));
+        response.flushBuffer();
     }
 }

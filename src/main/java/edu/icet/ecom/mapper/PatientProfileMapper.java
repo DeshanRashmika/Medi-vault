@@ -28,8 +28,13 @@ public class PatientProfileMapper {
         );
     }
 
-    public void applyUpdate(UpdatePatientProfileRequest request, User user) {
-        user.setFullName(request.getFullName().trim());
+    public void applyUpdate(UpdatePatientProfileRequest request, Patient patient) {
+        if (request.getFullName() != null) {
+            patient.getUser().setFullName(request.getFullName().trim());
+        }
+        patient.setBloodGroup(request.getBloodGroup());
+        patient.setHeight(request.getHeight());
+        patient.setWeight(request.getWeight());
     }
 
     public void applyHealthSummary(PatientProfileRequestDTO request, Patient patient) {

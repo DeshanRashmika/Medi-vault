@@ -14,5 +14,8 @@ public class UpdatePatientProfileRequest {
     @NotBlank(message = "Full name is required")
     @Size(max = 120, message = "Full name must be less than or equal to 120 characters")
     private String fullName;
-}
 
+    private String bloodGroup;
+    private Double height;
+    private Double weight;
+}

@@ -86,6 +86,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/patient/profile/**").hasRole("PATIENT")
                         .requestMatchers("/api/patients/profile/**").hasRole("PATIENT")
                         .anyRequest().authenticated()
