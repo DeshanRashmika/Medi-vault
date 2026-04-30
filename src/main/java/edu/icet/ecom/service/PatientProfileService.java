@@ -54,8 +54,13 @@ public class PatientProfileService {
     @Transactional
     public PatientProfileResponse updateCurrentProfile(String email, UpdatePatientProfileRequest request) {
         Patient patient = findOrCreatePatientByEmail(email);
-        patientProfileMapper.applyUpdate(request, patient.getUser());
-        userRepository.save(patient.getUser());
+        User user = patient.getUser();
+
+        patientProfileMapper.applyUpdate(request, patient);
+
+        userRepository.save(user);
+        patientRepository.save(patient);
+
         return patientProfileMapper.toResponse(patient);
     }
 
@@ -150,7 +155,10 @@ public class PatientProfileService {
                 });
     }
 
-    public record ProfileImageData(byte[] bytes, String contentType, String fileName, LocalDateTime updatedAt) {
+    public record ProfileImageData(
+            byte[] bytes,
+            String contentType,
+            String fileName,
+            LocalDateTime updatedAt) {
     }
 }
-
