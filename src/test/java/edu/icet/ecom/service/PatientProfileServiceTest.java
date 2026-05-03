@@ -67,7 +67,6 @@ class PatientProfileServiceTest {
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(patientRepository.findByUserEmail(user.getEmail())).thenReturn(Optional.of(patient));
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(patientRepository.save(any(Patient.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         patientProfileService.updateCurrentProfile(user.getEmail(), request);
@@ -76,7 +75,6 @@ class PatientProfileServiceTest {
         assertEquals("B+", patient.getBloodGroup());
         assertEquals(1.75, patient.getHeight());
         assertEquals(72.4, patient.getWeight());
-        verify(userRepository).save(eq(user));
         verify(patientRepository).save(eq(patient));
     }
 
@@ -95,4 +93,3 @@ class PatientProfileServiceTest {
         verify(userRepository, never()).save(any(User.class));
     }
 }
-

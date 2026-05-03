@@ -18,6 +18,7 @@ import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Set;
 
 @Service
@@ -54,22 +55,26 @@ public class PatientProfileService {
     @Transactional
     public PatientProfileResponse updateCurrentProfile(String email, UpdatePatientProfileRequest request) {
         Patient patient = findOrCreatePatientByEmail(email);
-        User user = patient.getUser();
 
+        // Apply mapped changes which may update both patient and nested user
         patientProfileMapper.applyUpdate(request, patient);
 
-        userRepository.save(user);
-        patientRepository.save(patient);
+        // Rely on cascade MERGE on Patient.user to persist nested User changes when saving Patient
+        Patient saved = patientRepository.save(patient);
 
-        return patientProfileMapper.toResponse(patient);
+        // Reload from repository to ensure response reflects persisted state (and any DB triggers)
+        Patient refreshed = patientRepository.findById(saved.getId()).orElse(saved);
+        return patientProfileMapper.toResponse(refreshed);
     }
 
     @Transactional
     public PatientProfileResponse updateHealthSummary(String email, PatientProfileRequestDTO request) {
         Patient patient = findOrCreatePatientByEmail(email);
         patientProfileMapper.applyHealthSummary(request, patient);
-        patientRepository.save(patient);
-        return patientProfileMapper.toResponse(patient);
+
+        Patient saved = patientRepository.save(patient);
+        Patient refreshed = patientRepository.findById(saved.getId()).orElse(saved);
+        return patientProfileMapper.toResponse(refreshed);
     }
 
     @Transactional
@@ -79,9 +84,10 @@ public class PatientProfileService {
 
         String fileName = fileStorageService.storeFile(file);
         patient.setProfileImageUrl("/uploads/" + fileName);
-        patientRepository.save(patient);
+        Patient saved = patientRepository.save(patient);
 
-        return patientProfileMapper.toResponse(patient);
+        Patient refreshed = patientRepository.findById(saved.getId()).orElse(saved);
+        return patientProfileMapper.toResponse(refreshed);
     }
 
     @Transactional
@@ -101,9 +107,10 @@ public class PatientProfileService {
                 : originalFilename);
         patient.setProfilePictureContentType(file.getContentType());
         patient.setProfilePictureUpdatedAt(LocalDateTime.now());
-        patientRepository.save(patient);
+        Patient saved = patientRepository.save(patient);
 
-        return patientProfileMapper.toResponse(patient);
+        Patient refreshed = patientRepository.findById(saved.getId()).orElse(saved);
+        return patientProfileMapper.toResponse(refreshed);
     }
 
     @Transactional
@@ -151,6 +158,8 @@ public class PatientProfileService {
                 .orElseGet(() -> {
                     Patient patient = new Patient();
                     patient.setUser(user);
+                    // Ensure consistent default profile image handling by storing the mapper fallback
+                    patient.setProfileImageUrl(PatientProfileMapper.PROFILE_IMAGE_URL);
                     return patientRepository.save(patient);
                 });
     }
@@ -160,5 +169,35 @@ public class PatientProfileService {
             String contentType,
             String fileName,
             LocalDateTime updatedAt) {
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ProfileImageData that = (ProfileImageData) o;
+            return Arrays.equals(bytes, that.bytes)
+                    && java.util.Objects.equals(contentType, that.contentType)
+                    && java.util.Objects.equals(fileName, that.fileName)
+                    && java.util.Objects.equals(updatedAt, that.updatedAt);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Arrays.hashCode(bytes);
+            result = 31 * result + (contentType != null ? contentType.hashCode() : 0);
+            result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
+            result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "ProfileImageData{" +
+                    "bytes-length=" + (bytes == null ? 0 : bytes.length) +
+                    ", contentType='" + contentType + '\'' +
+                    ", fileName='" + fileName + '\'' +
+                    ", updatedAt=" + updatedAt +
+                    '}';
+        }
     }
 }
