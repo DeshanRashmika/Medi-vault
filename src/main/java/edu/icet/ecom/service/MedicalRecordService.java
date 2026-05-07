@@ -7,7 +7,6 @@ import edu.icet.ecom.repository.MedicalRecordRepository;
 import edu.icet.ecom.repository.PatientRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,17 +14,16 @@ import java.util.List;
 @Service
 public class MedicalRecordService {
 
-    @Autowired
-    private MedicalRecordRepository recordRepository;
+    private final MedicalRecordRepository recordRepository;
+    private final PatientRepository patientRepository;
 
-    @Autowired
-    private PatientRepository patientRepository;
+    public MedicalRecordService(MedicalRecordRepository recordRepository, PatientRepository patientRepository) {
+        this.recordRepository = recordRepository;
+        this.patientRepository = patientRepository;
+    }
 
-    public List<MedicalRecord> getRecordsForDoctor(Long patient, Long doctorId) {
-        if (hasAccess(patient, doctorId)) {
-            return recordRepository.findByPatientId(patient);
-        }
-        throw new RuntimeException("Access Denied: You do not have permission to view these records.");
+    public List<MedicalRecord> getRecordsForDoctor(Long patientId, Long doctorId) {
+        return recordRepository.findByPatientId(patientId);
     }
 
     public List<MedicalRecord> getRecordsForCurrentPatient(String email) {
@@ -35,33 +33,35 @@ public class MedicalRecordService {
     }
 
     @Transactional
-    public MedicalRecord uploadSecureRecord(MedicalRecord record) {
-        if (record == null || record.getPatient() == null || record.getPatient().getId() == null) {
+    public MedicalRecord uploadSecureRecord(MedicalRecord medicalRecord) {
+        if (medicalRecord == null) {
+            throw new ValidationException("Request body is required");
+        }
+        if (medicalRecord.getTitle() == null || medicalRecord.getTitle().isBlank()) {
+            throw new ValidationException("title is required");
+        }
+        if (medicalRecord.getPatient() == null || medicalRecord.getPatient().getId() == null) {
             throw new ValidationException("patient.id is required");
         }
 
-        Patient patient = patientRepository.findById(record.getPatient().getId())
+        Patient patient = patientRepository.findById(medicalRecord.getPatient().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
-        record.setPatient(patient);
+        medicalRecord.setPatient(patient);
 
-        return recordRepository.save(record);
+        return recordRepository.save(medicalRecord);
     }
 
     @Transactional
-    public MedicalRecord uploadRecordForCurrentPatient(String email, MedicalRecord record) {
-        if (record == null) {
+    public MedicalRecord uploadRecordForCurrentPatient(String email, MedicalRecord medicalRecord) {
+        if (medicalRecord == null) {
             throw new ValidationException("Request body is required");
         }
 
         Patient patient = patientRepository.findByUserEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient profile not found"));
-        record.setPatient(patient);
+        medicalRecord.setPatient(patient);
 
-        return recordRepository.save(record);
-    }
-
-    private boolean hasAccess(Long patient, Long doctorId) {
-        return true;
+        return recordRepository.save(medicalRecord);
     }
 
     public List<MedicalRecord> getRecordsByPatientId(Long patientId) {

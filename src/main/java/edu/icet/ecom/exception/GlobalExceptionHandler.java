@@ -3,6 +3,7 @@ package edu.icet.ecom.exception;
 import edu.icet.ecom.dto.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -10,13 +11,15 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -33,7 +36,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ConstraintViolationException.class, ValidationException.class, IllegalArgumentException.class,
             HttpMessageNotReadableException.class, MaxUploadSizeExceededException.class,
-            MissingServletRequestParameterException.class})
+            MissingServletRequestParameterException.class, MultipartException.class,
+            DataIntegrityViolationException.class})
 
     public ResponseEntity<ApiResponse<Void>> handleBadRequest(Exception ex) {
         String message = ex.getMessage() == null ? "Invalid request" : ex.getMessage();
@@ -44,6 +48,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleUnsupportedMedia(UnsupportedMediaTypeStatusException ex) {
         String message = ex.getReason() == null ? "Unsupported media type" : ex.getReason();
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(ApiResponse.error(message));
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ApiResponse<Void>> handleFileStorage(FileStorageException ex) {
+        String message = ex.getMessage() == null ? "File upload failed" : ex.getMessage();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(message));
     }
 
     @ExceptionHandler(ForbiddenOperationException.class)
