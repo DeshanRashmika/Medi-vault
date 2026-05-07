@@ -1,7 +1,10 @@
 package edu.icet.ecom.service;
+
+import edu.icet.ecom.exception.FileStorageException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,13 +18,15 @@ public class FileStorageService {
 
     public FileStorageService() {
         try {
-            Files.createDirectories((java.nio.file.Path) this.fileStorageLocation);
+            Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
-            throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
+            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
     }
+
     public String storeFile(MultipartFile file) {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String originalFileName = file.getOriginalFilename();
+        String fileName = StringUtils.cleanPath(originalFileName == null ? "file" : originalFileName);
 
         try {
             String newFileName = System.currentTimeMillis() + "_" + fileName;
@@ -30,7 +35,7 @@ public class FileStorageService {
 
             return newFileName;
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
     }
 }

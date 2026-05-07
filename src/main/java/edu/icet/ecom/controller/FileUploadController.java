@@ -28,10 +28,16 @@ public class FileUploadController {
 
     @PostMapping("/upload-secure")
     public ResponseEntity<ApiResponse<MedicalRecord>> uploadMedicalFile(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("title") String title,
-            @RequestParam("patientId") Long patientId) {
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "patientId", required = false) Long patientId) {
 
+        if (file == null || file.isEmpty()) {
+            throw new ValidationException("File is required");
+        }
+        if (title == null || title.isBlank()) {
+            throw new ValidationException("Title is required");
+        }
         if (patientId == null || patientId <= 0) {
             throw new ValidationException("Valid patientId is required");
         }
@@ -41,12 +47,12 @@ public class FileUploadController {
 
         String fileName = fileStorageService.storeFile(file);
 
-        MedicalRecord record = new MedicalRecord();
-        record.setTitle(title);
-        record.setFileUrl("/uploads/" + fileName);
-        record.setPatient(patient);
+        MedicalRecord medicalRecord = new MedicalRecord();
+        medicalRecord.setTitle(title.trim());
+        medicalRecord.setFileUrl("/uploads/" + fileName);
+        medicalRecord.setPatient(patient);
 
-        MedicalRecord savedRecord = medicalRecordService.uploadSecureRecord(record);
+        MedicalRecord savedRecord = medicalRecordService.uploadSecureRecord(medicalRecord);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("File uploaded successfully", savedRecord));
     }
