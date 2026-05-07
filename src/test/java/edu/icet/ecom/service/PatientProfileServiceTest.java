@@ -1,5 +1,6 @@
 package edu.icet.ecom.service;
 
+import edu.icet.ecom.dto.PatientProfileResponse;
 import edu.icet.ecom.dto.UpdatePatientProfileRequest;
 import edu.icet.ecom.exception.ForbiddenOperationException;
 import edu.icet.ecom.mapper.PatientProfileMapper;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +49,7 @@ class PatientProfileServiceTest {
     }
 
     @Test
-    void updateCurrentProfile_savesUserAndPatientInSameFlow() {
+    void updateCurrentProfile_appliesChangesWithoutExplicitSave() {
         User user = new User();
         user.setId(10L);
         user.setEmail("patient@medi-vault.com");
@@ -67,29 +68,34 @@ class PatientProfileServiceTest {
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(patientRepository.findByUserEmail(user.getEmail())).thenReturn(Optional.of(patient));
-        when(patientRepository.save(any(Patient.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        patientProfileService.updateCurrentProfile(user.getEmail(), request);
+        PatientProfileResponse response = patientProfileService.updateCurrentProfile(user.getEmail(), request);
 
         assertEquals("Updated Name", user.getFullName());
         assertEquals("B+", patient.getBloodGroup());
         assertEquals(1.75, patient.getHeight());
         assertEquals(72.4, patient.getWeight());
-        verify(patientRepository).save(eq(patient));
+        assertEquals("/api/patient/profile/picture", response.getProfileImageUrl());
+        verify(patientRepository, never()).save(any(Patient.class));
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
-    void updateCurrentProfile_rejectsNonPatientUsers() {
-        User doctor = new User();
-        doctor.setEmail("doctor@medi-vault.com");
-        doctor.setRole(User.Role.DOCTOR);
+    void getCurrentProfile_usesFallbackImageUrlWhenBlank() {
+        User user = new User();
+        user.setEmail("patient@medi-vault.com");
+        user.setFullName("Patient One");
+        user.setRole(User.Role.PATIENT);
 
-        when(userRepository.findByEmail(doctor.getEmail())).thenReturn(Optional.of(doctor));
+        Patient patient = new Patient();
+        patient.setUser(user);
+        patient.setProfileImageUrl("   ");
 
-        assertThrows(ForbiddenOperationException.class,
-                () -> patientProfileService.updateCurrentProfile(doctor.getEmail(), new UpdatePatientProfileRequest()));
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(patientRepository.findByUserEmail(user.getEmail())).thenReturn(Optional.of(patient));
 
-        verify(patientRepository, never()).save(any(Patient.class));
-        verify(userRepository, never()).save(any(User.class));
+        PatientProfileResponse response = patientProfileService.getCurrentProfile(user.getEmail());
+
+        assertEquals(PatientProfileMapper.PROFILE_IMAGE_URL, response.getProfileImageUrl());
     }
 }

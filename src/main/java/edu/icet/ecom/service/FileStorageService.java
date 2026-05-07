@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-public class FileStorageService {
+public class    FileStorageService {
 
     private final Path fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
 

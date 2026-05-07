@@ -59,12 +59,7 @@ public class PatientProfileService {
         // Apply mapped changes which may update both patient and nested user
         patientProfileMapper.applyUpdate(request, patient);
 
-        // Rely on cascade MERGE on Patient.user to persist nested User changes when saving Patient
-        Patient saved = patientRepository.save(patient);
-
-        // Reload from repository to ensure response reflects persisted state (and any DB triggers)
-        Patient refreshed = patientRepository.findById(saved.getId()).orElse(saved);
-        return patientProfileMapper.toResponse(refreshed);
+        return patientProfileMapper.toResponse(patient);
     }
 
     @Transactional
@@ -72,9 +67,7 @@ public class PatientProfileService {
         Patient patient = findOrCreatePatientByEmail(email);
         patientProfileMapper.applyHealthSummary(request, patient);
 
-        Patient saved = patientRepository.save(patient);
-        Patient refreshed = patientRepository.findById(saved.getId()).orElse(saved);
-        return patientProfileMapper.toResponse(refreshed);
+        return patientProfileMapper.toResponse(patient);
     }
 
     @Transactional
@@ -84,10 +77,7 @@ public class PatientProfileService {
 
         String fileName = fileStorageService.storeFile(file);
         patient.setProfileImageUrl("/uploads/" + fileName);
-        Patient saved = patientRepository.save(patient);
-
-        Patient refreshed = patientRepository.findById(saved.getId()).orElse(saved);
-        return patientProfileMapper.toResponse(refreshed);
+        return patientProfileMapper.toResponse(patient);
     }
 
     @Transactional
@@ -107,10 +97,7 @@ public class PatientProfileService {
                 : originalFilename);
         patient.setProfilePictureContentType(file.getContentType());
         patient.setProfilePictureUpdatedAt(LocalDateTime.now());
-        Patient saved = patientRepository.save(patient);
-
-        Patient refreshed = patientRepository.findById(saved.getId()).orElse(saved);
-        return patientProfileMapper.toResponse(refreshed);
+        return patientProfileMapper.toResponse(patient);
     }
 
     @Transactional
