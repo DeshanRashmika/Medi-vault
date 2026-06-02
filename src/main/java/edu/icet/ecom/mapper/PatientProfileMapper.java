@@ -14,9 +14,7 @@ public class PatientProfileMapper {
 
     public PatientProfileResponse toResponse(Patient patient) {
         User user = patient.getUser();
-        String imageUrl = patient.getProfileImageUrl() == null || patient.getProfileImageUrl().isBlank()
-                ? PROFILE_IMAGE_URL
-                : patient.getProfileImageUrl();
+        String imageUrl = resolveProfileImageUrl(patient.getProfileImageUrl());
 
         return new PatientProfileResponse(
                 user.getFullName(),
@@ -42,8 +40,12 @@ public class PatientProfileMapper {
         patient.setHeight(request.getHeight());
         patient.setWeight(request.getWeight());
 
-        if (request.getProfileImageUrl() != null && !request.getProfileImageUrl().isBlank()) {
-            patient.setProfileImageUrl(request.getProfileImageUrl().trim());
-        }
+        patient.setProfileImageUrl(resolveProfileImageUrl(request.getProfileImageUrl()));
+    }
+
+    private String resolveProfileImageUrl(String profileImageUrl) {
+        return profileImageUrl == null || profileImageUrl.isBlank()
+                ? PROFILE_IMAGE_URL
+                : profileImageUrl.trim();
     }
 }

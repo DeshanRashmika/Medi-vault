@@ -48,7 +48,7 @@ public class Patient {
     @Column(name = "profile_picture_updated_at")
     private LocalDateTime profilePictureUpdatedAt;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

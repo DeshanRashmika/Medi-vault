@@ -97,6 +97,7 @@ public class PatientProfileService {
                 : originalFilename);
         patient.setProfilePictureContentType(file.getContentType());
         patient.setProfilePictureUpdatedAt(LocalDateTime.now());
+        patient.setProfileImageUrl(PatientProfileMapper.PROFILE_IMAGE_URL);
         return patientProfileMapper.toResponse(patient);
     }
 
@@ -141,14 +142,19 @@ public class PatientProfileService {
             throw new ForbiddenOperationException("Only patients can access patient profile endpoints");
         }
 
-        return patientRepository.findByUserEmail(email)
+        Patient patient = patientRepository.findByUserEmail(email)
                 .orElseGet(() -> {
-                    Patient patient = new Patient();
-                    patient.setUser(user);
-                    // Ensure consistent default profile image handling by storing the mapper fallback
-                    patient.setProfileImageUrl(PatientProfileMapper.PROFILE_IMAGE_URL);
-                    return patientRepository.save(patient);
+                    Patient created = new Patient();
+                    created.setUser(user);
+                    created.setProfileImageUrl(PatientProfileMapper.PROFILE_IMAGE_URL);
+                    return patientRepository.save(created);
                 });
+
+        if (patient.getProfileImageUrl() == null || patient.getProfileImageUrl().isBlank()) {
+            patient.setProfileImageUrl(PatientProfileMapper.PROFILE_IMAGE_URL);
+        }
+
+        return patient;
     }
 
     public record ProfileImageData(
