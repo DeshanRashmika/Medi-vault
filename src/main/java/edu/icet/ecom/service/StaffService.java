@@ -21,9 +21,10 @@ public class StaffService {
     }
 
     @Transactional
-    public Staff addStaffMember(Staff staff, String username, String password, User.Role role) {
+    public Staff addStaffMember(Staff staff, String email, String password, User.Role role) {
         User user = new User();
-        user.setUsername(username);
+        user.setEmail(email);
+        user.setFullName(staff.getFullName());
         user.setPassword(password);
         user.setRole(role);
         User savedUser = userRepository.save(user);
@@ -42,5 +43,14 @@ public class StaffService {
 
     public List<Staff> getDoctorsBySpecialization(String specialization) {
         return staffRepository.findBySpecialization(specialization);
+    }
+
+    public List<Staff> getAllStaff() {
+        return staffRepository.findAll();
+    }
+
+    @Transactional
+    public void deleteStaff(Long id) {
+        staffRepository.deleteById(id);
     }
 }

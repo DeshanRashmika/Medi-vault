@@ -21,9 +21,17 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
+    public void setUsername(String username) {
+    }
+
     public enum Role {
-        PATIENT, DOCTOR
+        ADMIN,
+        DOCTOR,
+        NURSE,
+        PHARMACIST,
+        PATIENT
     }
 }

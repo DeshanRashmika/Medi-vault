@@ -35,4 +35,13 @@ public class InventoryService {
     public List<Inventory> getLowStockAlerts() {
         return inventoryRepository.findLowStockItems();
     }
+
+    public List<Inventory> getAllItems() {
+        return inventoryRepository.findAll();
+    }
+
+    @Transactional
+    public void deleteItem(Long id) {
+        inventoryRepository.deleteById(id);
+    }
 }

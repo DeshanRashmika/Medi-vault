@@ -47,4 +47,13 @@ public class BedService {
     public List<Bed> getAvailableBeds() {
         return bedRepository.findByIsOccupied(false);
     }
+
+    public List<Bed> getAllBeds() {
+        return bedRepository.findAll();
+    }
+
+    @Transactional
+    public Bed addBed(Bed bed) {
+        return bedRepository.save(bed);
+    }
 }

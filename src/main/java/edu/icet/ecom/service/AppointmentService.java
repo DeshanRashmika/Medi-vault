@@ -16,20 +16,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AppointmentService {
+
+    private final StaffRepository staffRepository;
     private final AppointmentRepository appointmentRepository;
     private PatientRepository patientRepository;
     private final PatientService patientService;
-    private final staffService staffService;
-    private final billingService billingService;
-    public AppointmentService(AppointmentRepository appointmentRepository,
-                              PatientRepository patientRepository,
-                              StaffRepository staffRepository, PatientService patientService, staffService staffService, billingService billingService) {
-        this.appointmentRepository = appointmentRepository;
-        this.patientRepository = patientRepository;
-        this.patientService = patientService;
-        this.staffService = staffService;
-        this.billingService = billingService;
-    }
+    private final StaffService staffService;
+    private final BillingService billingService;
+
     @Transactional
     public Appointment bookAppointment(Long patientId, Long doctorId, LocalDateTime dateTime) {
         Patient patient = patientRepository.findById(patientId)
