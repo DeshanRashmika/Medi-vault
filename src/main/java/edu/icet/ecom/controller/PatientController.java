@@ -3,18 +3,16 @@ package edu.icet.ecom.controller;
 import edu.icet.ecom.dto.ApiResponse;
 import edu.icet.ecom.dto.PatientProfileRequestDTO;
 import edu.icet.ecom.dto.PatientProfileResponse;
+import edu.icet.ecom.models.Patient;
 import edu.icet.ecom.service.PatientProfileService;
+import edu.icet.ecom.service.PatientService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,13 +21,11 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/patients/profile")
 @PreAuthorize("hasRole('PATIENT')")
+@RequiredArgsConstructor
 public class PatientController {
 
     private final PatientProfileService patientProfileService;
-
-    public PatientController(PatientProfileService patientProfileService) {
-        this.patientProfileService = patientProfileService;
-    }
+    private final PatientService patientService;
 
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<PatientProfileResponse>> updateHealthSummary(Principal principal,
@@ -53,5 +49,11 @@ public class PatientController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         return principal.getName();
+    }
+    @PutMapping("/{id}/medical-history")
+    public ResponseEntity<Patient> updateMedicalHistory(@PathVariable Long id,
+                                                        @RequestBody String newHistory) {
+        Patient updatedPatient = patientService.updateMedicalHistory(id, newHistory);
+        return ResponseEntity.ok(updatedPatient);
     }
 }

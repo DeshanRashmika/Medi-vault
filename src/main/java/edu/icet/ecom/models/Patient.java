@@ -17,10 +17,19 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String address;
     private String phoneNumber;
     private LocalDate dateOfBirth;
+    private String firstName;
+    private String lastName;
+    private String nic;
+    private String contactNumber;
+
+    @Column(columnDefinition = "TEXT")
+    private String medicalHistory;
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<Appointment> appointments;
 
     @Column(name = "blood_group", length = 10)
     private String bloodGroup;
