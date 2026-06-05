@@ -1,0 +1,177 @@
+:host {
+  display: contents;
+}
+
+.upload-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.upload-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.upload-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 34rem);
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 28%),
+    rgba(2, 6, 23, 0.96);
+  color: #e2e8f0;
+  box-shadow: 0 30px 120px rgba(2, 6, 23, 0.55);
+  padding: 1.75rem;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.upload-dialog__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.upload-dialog__header h3,
+.file-dropzone strong,
+.field label {
+  color: #fff;
+}
+
+.close-button,
+.secondary-button,
+.primary-button {
+  border-radius: 1rem;
+  font: inherit;
+  padding: 0.85rem 1rem;
+}
+
+.close-button,
+.secondary-button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #cbd5e1;
+}
+
+.upload-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.file-dropzone {
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+  border: 1px dashed rgba(103, 232, 249, 0.22);
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.72));
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.file-dropzone span {
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.file-dropzone strong {
+  font-size: 1rem;
+}
+
+.file-dropzone input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-dropzone:hover {
+  border-color: rgba(103, 232, 249, 0.45);
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 1), rgba(15, 23, 42, 0.82));
+}
+
+.field {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.field label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.field textarea {
+  width: 100%;
+  min-height: 7rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.8);
+  color: #f8fafc;
+  padding: 0.95rem 1rem;
+  font: inherit;
+  resize: vertical;
+  outline: none;
+}
+
+.field textarea::placeholder {
+  color: #64748b;
+}
+
+.field textarea:focus {
+  border-color: rgba(34, 211, 238, 0.8);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+}
+
+.field-error {
+  margin: 0;
+  color: #fda4af;
+  font-size: 0.88rem;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.primary-button {
+  border: 0;
+  background: #22d3ee;
+  color: #020617;
+  font-weight: 700;
+}
+
+.primary-button:hover,
+.secondary-button:hover,
+.close-button:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .upload-dialog {
+    padding: 1.25rem;
+  }
+
+  .upload-dialog__header {
+    flex-direction: column;
+  }
+
+  .dialog-actions {
+    flex-direction: column-reverse;
+  }
+}
