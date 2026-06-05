@@ -1,0 +1,91 @@
+<div class="min-h-screen bg-slate-900 text-slate-100 p-8">
+  <div class="max-w-7xl mx-auto space-y-8">
+    <div class="flex justify-between items-center bg-slate-800 p-6 rounded-2xl border border-slate-700/50 shadow-xl backdrop-blur-sm">
+      <div>
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Nurse Dashboard</h1>
+        <p class="text-slate-400 mt-1">Manage patient care, vitals, and bed assignments</p>
+      </div>
+      <button (click)="logout()" class="px-6 py-2 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(244,63,94,0.1)]">
+        Logout
+      </button>
+    </div>
+
+    <!-- Bed Management Section -->
+    <div class="bg-slate-800 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
+      <div class="p-6 border-b border-slate-700/50 flex justify-between items-center bg-slate-800/50 backdrop-blur-md">
+        <h2 class="text-xl font-semibold flex items-center gap-2 text-slate-100">
+          <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          Bed Assignments
+        </h2>
+        <button (click)="showAddBedForm = !showAddBedForm" class="px-5 py-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.1)] flex items-center gap-2">
+          <span *ngIf="!showAddBedForm">+ Add Bed</span>
+          <span *ngIf="showAddBedForm">Cancel</span>
+        </button>
+      </div>
+
+      <!-- Add Bed Form -->
+      <div *ngIf="showAddBedForm" class="p-6 bg-slate-800/80 border-b border-slate-700/50 animate-in fade-in slide-in-from-top-4">
+        <form (ngSubmit)="addBed()" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div>
+            <label class="block text-sm font-medium text-slate-400 mb-1">Ward Name</label>
+            <input type="text" [(ngModel)]="newBed.ward" name="ward" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-100 transition-all">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-400 mb-1">Room Number</label>
+            <input type="text" [(ngModel)]="newBed.roomNumber" name="roomNumber" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-100 transition-all">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-400 mb-1">Bed Number</label>
+            <input type="text" [(ngModel)]="newBed.bedNumber" name="bedNumber" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-100 transition-all">
+          </div>
+          <div class="md:col-span-3">
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white font-medium py-3 rounded-xl transition-all shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+              Create Bed
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Bed List Grid -->
+      <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let bed of bedsList" class="relative p-5 rounded-2xl border transition-all"
+             [ngClass]="bed.occupied ? 'bg-indigo-500/10 border-indigo-500/30' : 'bg-emerald-500/10 border-emerald-500/30'">
+          
+          <div class="absolute top-4 right-4 flex items-center gap-1.5">
+            <div class="w-2.5 h-2.5 rounded-full animate-pulse" [ngClass]="bed.occupied ? 'bg-indigo-500' : 'bg-emerald-500'"></div>
+            <span class="text-xs font-semibold" [ngClass]="bed.occupied ? 'text-indigo-400' : 'text-emerald-400'">
+              {{bed.occupied ? 'OCCUPIED' : 'AVAILABLE'}}
+            </span>
+          </div>
+
+          <h3 class="text-xl font-bold text-slate-200 mb-1">Bed {{bed.bedNumber}}</h3>
+          <p class="text-sm text-slate-400 mb-4">{{bed.ward}} - Room {{bed.roomNumber}}</p>
+
+          <div *ngIf="bed.occupied" class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50 mb-4">
+            <p class="text-xs text-slate-500 mb-1">Assigned Patient</p>
+            <p class="font-medium text-slate-300">{{bed.currentPatient?.fullName || 'Unknown Patient'}}</p>
+          </div>
+
+          <div *ngIf="!bed.occupied" class="mb-4">
+            <select #patientSelect class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-slate-100 transition-all">
+              <option value="">Select Patient to Assign...</option>
+              <option *ngFor="let patient of patientsList" [value]="patient.id">{{patient.fullName}}</option>
+            </select>
+          </div>
+
+          <button *ngIf="!bed.occupied" (click)="assignBed(bed.id, patientSelect.value)" class="w-full py-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 font-medium rounded-xl transition-colors border border-emerald-500/30 text-sm">
+            Assign Patient
+          </button>
+          
+          <button *ngIf="bed.occupied" (click)="releaseBed(bed.id)" class="w-full py-2.5 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 font-medium rounded-xl transition-colors border border-indigo-500/30 text-sm">
+            Release Bed
+          </button>
+        </div>
+
+        <div *ngIf="bedsList.length === 0" class="col-span-full p-8 text-center text-slate-500 bg-slate-800/30 rounded-2xl border border-slate-700/30 text-sm">
+          No beds configured in the system.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
