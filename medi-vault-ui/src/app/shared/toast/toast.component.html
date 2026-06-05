@@ -1,0 +1,19 @@
+<div class="toast-stack" aria-live="polite" aria-atomic="true">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <article class="toast-item" [class.toast-item--success]="toast.type === 'success'" [class.toast-item--error]="toast.type === 'error'" [class.toast-item--info]="toast.type === 'info'">
+      <div>
+        <p class="toast-item__label">
+          @if (toast.type === 'success') {
+            Success
+          } @else if (toast.type === 'error') {
+            Error
+          } @else {
+            Info
+          }
+        </p>
+        <p class="toast-item__message">{{ toast.message }}</p>
+      </div>
+      <button type="button" class="toast-item__close" (click)="close(toast.id)">Dismiss</button>
+    </article>
+  }
+</div>
