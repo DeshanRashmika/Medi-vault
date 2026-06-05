@@ -1,0 +1,273 @@
+<div class="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden">
+    <div class="absolute -left-24 top-8 h-80 w-80 rounded-full bg-cyan-400/15 blur-3xl"></div>
+    <div class="absolute right-0 top-16 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl"></div>
+    <div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-teal-400/10 blur-3xl"></div>
+  </div>
+
+  <main class="relative mx-auto grid min-h-screen max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:px-8 lg:py-8">
+    <section class="mv-reveal mv-stagger-1 hidden flex-col justify-between rounded-4xl border border-white/10 bg-white/5 p-10 shadow-[0_40px_120px_rgba(2,6,23,0.55)] backdrop-blur-2xl lg:flex">
+      <div class="inline-flex w-fit items-center gap-3 rounded-full border border-cyan-400/25 bg-slate-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+        <span class="h-2 w-2 rounded-full bg-cyan-300"></span>
+        Medi-Vault secure access
+      </div>
+
+      <div class="max-w-3xl space-y-6">
+        <h1 class="text-5xl font-semibold tracking-tight text-white xl:text-6xl">Patient records, protected behind one calm, focused login.</h1>
+        <p class="max-w-2xl text-lg leading-8 text-slate-300" opacity="10%" transition="opacity 0.5s ease-in-out" delay="200">
+          Review your medical history, upload new files, and keep your care team aligned with a dashboard designed for clarity, not clutter.
+        </p>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-3" aria-hidden="true">
+
+      </div>
+    </section>
+
+    <section class="mv-reveal mv-stagger-2 flex flex-col justify-center rounded-4xl border border-white/10 bg-white/5 p-6 shadow-[0_40px_120px_rgba(2,6,23,0.55)] backdrop-blur-2xl sm:p-8 lg:p-10">
+      <div class="mb-8 space-y-3 text-center lg:text-left">
+        <div class="inline-flex items-center gap-10 rounded-full border border-cyan-400/25 bg-slate-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em]  bg-cyan-300">
+          Secure login
+        </div>
+        <h2 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl">Welcome back</h2>
+        <p class="text-base leading-7 text-slate-300">Sign in with your patient account to access records and uploads.</p>
+      </div>
+
+
+
+      @if (loginError()) {
+        <div class="mb-5 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100" role="alert">
+          {{ loginError() }}
+        </div>
+      }
+
+      @if (registerError()) {
+        <div class="mb-5 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100" role="alert">
+          {{ registerError() }}
+        </div>
+      }
+
+      @if (registerSuccess()) {
+        <output class="mb-5 block rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+          {{ registerSuccess() }}
+        </output>
+      }
+
+      @if (!isRegisterMode()) {
+        <form class="grid gap-5" [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
+          <div class="grid gap-2">
+            <label for="email" class="text-sm font-semibold text-slate-200">Email address</label>
+            <input
+              id="email"
+              type="text"
+              inputmode="email"
+              formControlName="email"
+              name="username"
+              autocomplete="username"
+              placeholder="patient@medi-vault.com"
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+            />
+            @if (emailInvalid) {
+              <p class="text-sm text-rose-200">Enter a valid email address.</p>
+            }
+          </div>
+
+          <div class="grid gap-2">
+            <label for="password" class="text-sm font-semibold text-slate-200">Password</label>
+            <div class="relative">
+              @if (passwordVisible()) {
+                <input
+                  id="password"
+                  type="text"
+                  formControlName="password"
+                  name="password"
+                  autocomplete="current-password"
+                  placeholder="Your secure password"
+                  class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 pr-24 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+                />
+              } @else {
+                <input
+                  id="password"
+                  type="password"
+                  formControlName="password"
+                  name="password"
+                  autocomplete="current-password"
+                  placeholder="Your secure password"
+                  class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 pr-24 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+                />
+              }
+              <button
+                type="button"
+                class="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-300/50 hover:text-cyan-100"
+                (click)="togglePasswordVisibility()"
+              >
+                {{ passwordVisible() ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+            @if (passwordInvalid) {
+              <p class="text-sm text-rose-200">Password must be at least 8 characters long.</p>
+            }
+          </div>
+
+          <div class="flex flex-col gap-3 text-sm text-slate-300 sm:flex-row sm:items-center sm:justify-between">
+            <label class="inline-flex items-center gap-2">
+              <input type="checkbox" class="h-4 w-4 rounded border-white/20 bg-slate-900 text-cyan-300 focus:ring-cyan-300/20" />
+              <span>Remember me</span>
+            </label>
+            <a routerLink="/login" class="font-semibold text-white transition hover:text-cyan-200">Forgot password?</a>
+          </div>
+
+          <button
+            class="inline-flex w-full items-center justify-center rounded-2xl bg-cyan-300 px-4 py-3 text-base font-bold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+            type="submit"
+            [disabled]="isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              Signing in...
+            } @else {
+              Sign in
+            }
+          </button>
+        </form>
+      } @else {
+        <form class="grid gap-5" [formGroup]="registerForm" (ngSubmit)="submitRegister()" novalidate>
+          <div class="grid gap-2">
+            <label for="fullName" class="text-sm font-semibold text-slate-200">Full name</label>
+            <input
+              id="fullName"
+              type="text"
+              formControlName="fullName"
+              name="fullName"
+              autocomplete="name"
+              placeholder="Jane Doe"
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+            />
+            @if (registerNameInvalid) {
+              <p class="text-sm text-rose-200">Enter your full name (minimum 3 characters).</p>
+            }
+          </div>
+
+          <div class="grid gap-2">
+            <label for="registerEmail" class="text-sm font-semibold text-slate-200">Email address</label>
+            <input
+              id="registerEmail"
+              type="email"
+              formControlName="email"
+              name="registerEmail"
+              autocomplete="email"
+              placeholder="patient@medi-vault.com"
+              class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+            />
+            @if (registerEmailInvalid) {
+              <p class="text-sm text-rose-200">Enter a valid email address.</p>
+            }
+          </div>
+
+          <div class="grid gap-2">
+            <label for="registerPassword" class="text-sm font-semibold text-slate-200">Password</label>
+            <div class="relative">
+              @if (registerPasswordVisible()) {
+                <input
+                  id="registerPassword"
+                  type="text"
+                  formControlName="password"
+                  name="registerPassword"
+                  autocomplete="new-password"
+                  placeholder="Create a strong password"
+                  class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 pr-24 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+                />
+              } @else {
+                <input
+                  id="registerPassword"
+                  type="password"
+                  formControlName="password"
+                  name="registerPassword"
+                  autocomplete="new-password"
+                  placeholder="Create a strong password"
+                  class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 pr-24 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+                />
+              }
+              <button
+                type="button"
+                class="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-300/50 hover:text-cyan-100"
+                (click)="toggleRegisterPasswordVisibility()"
+              >
+                {{ registerPasswordVisible() ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+            @if (registerPasswordInvalid) {
+              <p class="text-sm text-rose-200">Password must be at least 8 characters long.</p>
+            }
+          </div>
+
+          <div class="grid gap-2">
+            <label for="confirmPassword" class="text-sm font-semibold text-slate-200">Confirm password</label>
+            <div class="relative">
+              @if (registerConfirmVisible()) {
+                <input
+                  id="confirmPassword"
+                  type="text"
+                  formControlName="confirmPassword"
+                  name="confirmPassword"
+                  autocomplete="new-password"
+                  placeholder="Re-enter password"
+                  class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 pr-24 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+                />
+              } @else {
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  formControlName="confirmPassword"
+                  name="confirmPassword"
+                  autocomplete="new-password"
+                  placeholder="Re-enter password"
+                  class="w-full rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 pr-24 text-slate-50 outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-4 focus:ring-cyan-300/15"
+                />
+              }
+              <button
+                type="button"
+                class="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl border border-white/10 bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white transition hover:border-cyan-300/50 hover:text-cyan-100"
+                (click)="toggleRegisterConfirmVisibility()"
+              >
+                {{ registerConfirmVisible() ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+            @if (registerConfirmInvalid) {
+              <p class="text-sm text-rose-200">Confirm password is required.</p>
+            }
+          </div>
+
+          <button
+            class="inline-flex w-full items-center justify-center rounded-2xl bg-cyan-300 px-4 py-3 text-base font-bold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-70"
+            type="submit"
+            [disabled]="isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              Creating account...
+            } @else {
+              Create account
+            }
+          </button>
+        </form>
+      }
+
+      <p class="mt-6 text-center text-sm leading-6 text-slate-300 lg:text-left">
+        @if (isRegisterMode()) {
+          Already have an account?
+          <button type="button" class="ml-1 font-semibold text-cyan-200 transition hover:text-cyan-100" (click)="setAuthMode(false)">
+            Sign in instead
+          </button>
+        } @else {
+          Need an account?
+          <button type="button" class="ml-1 font-semibold text-cyan-200 transition hover:text-cyan-100" (click)="setAuthMode(true)">
+            Create
+          </button>
+        }
+      </p>
+
+      <div class="mv-reveal mv-stagger-3 mt-6 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-4 text-sm leading-6 text-cyan-50/90">
+        Professional medical portal styling, dark glass surfaces, and clear visual hierarchy keep the experience calm and easy to trust.
+      </div>
+    </section>
+  </main>
+</div>
