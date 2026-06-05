@@ -1,0 +1,90 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.doctor-shell {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(34, 211, 238, 0.18), transparent 34%),
+    radial-gradient(circle at 90% 0%, rgba(14, 165, 233, 0.14), transparent 32%),
+    linear-gradient(165deg, #020818 0%, #071531 48%, #030b1f 100%);
+}
+
+.doctor-sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(185deg, rgba(2, 10, 28, 0.95) 0%, rgba(4, 16, 40, 0.85) 100%);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03);
+}
+
+.pulse-grid {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.doctor-hero {
+  background:
+    linear-gradient(120deg, rgba(34, 211, 238, 0.16) 0%, rgba(15, 23, 42, 0.72) 42%, rgba(6, 11, 30, 0.86) 100%),
+    radial-gradient(circle at 72% 22%, rgba(20, 184, 166, 0.22), transparent 45%);
+}
+
+.doctor-stat {
+  background: linear-gradient(160deg, rgba(2, 6, 23, 0.58), rgba(15, 23, 42, 0.3));
+}
+
+.doctor-note-card {
+  background:
+    linear-gradient(150deg, rgba(8, 23, 53, 0.85) 0%, rgba(7, 18, 39, 0.58) 100%),
+    radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.15), transparent 40%);
+}
+
+.doctor-table-shell {
+  background: linear-gradient(175deg, rgba(7, 18, 39, 0.88), rgba(4, 11, 26, 0.94));
+}
+
+.doctor-quick-menu {
+  backdrop-filter: blur(12px);
+}
+
+.doctor-menu-item {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: transparent;
+  color: #cbd5e1;
+  text-align: left;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.doctor-menu-item:last-child {
+  border-bottom: 0;
+}
+
+.doctor-menu-item:hover {
+  background: rgba(8, 47, 73, 0.78);
+  color: #f8fafc;
+}
+
+/* Modal and Scrollbar Polish */
+section::-webkit-scrollbar {
+  width: 6px;
+}
+
+section::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+section::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.2);
+  border-radius: 10px;
+}
+
+section::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.4);
+}
