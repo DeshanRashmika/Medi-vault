@@ -26,10 +26,9 @@ class PatientControllerTest {
     @BeforeEach
     void setUp() {
         patientProfileService = Mockito.mock(PatientProfileService.class);
-        PatientController controller = new PatientController(patientProfileService);
 
         mockMvc = MockMvcBuilders
-                .standaloneSetup(controller)
+                .standaloneSetup(patientProfileService)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
     }
