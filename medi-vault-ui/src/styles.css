@@ -1,0 +1,81 @@
+@import 'tailwindcss';
+@source "./**/*.{html,ts}";
+
+:root {
+  color-scheme: dark;
+  --mv-font-body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --mv-font-display: 'Space Grotesk', 'IBM Plex Sans', sans-serif;
+  font-family: var(--mv-font-body);
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.14), transparent 22%),
+    linear-gradient(180deg, #020617 0%, #0f172a 54%, #111827 100%);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: inherit;
+  color: #e2e8f0;
+  letter-spacing: 0.01em;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--mv-font-display);
+  letter-spacing: -0.01em;
+}
+
+.mv-reveal {
+  animation: mv-reveal-up 640ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.mv-stagger-1 {
+  animation-delay: 100ms;
+}
+
+.mv-stagger-2 {
+  animation-delay: 180ms;
+}
+
+.mv-stagger-3 {
+  animation-delay: 260ms;
+}
+
+.mv-soft-hover {
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.mv-soft-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(125, 211, 252, 0.35);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.32);
+}
+
+@keyframes mv-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+::selection {
+  background: rgba(56, 189, 248, 0.28);
+  color: #020617;
+}
